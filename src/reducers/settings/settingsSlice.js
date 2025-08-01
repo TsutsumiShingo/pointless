@@ -44,7 +44,11 @@ const settingsSlice = createSlice({
           state.viewMode = action.payload.viewMode;
         }
 
-        if (Object.values(LINEWIDTH).includes(action.payload.canvasPreferredLinewidth)) {
+        // カスタムラインサイズも含めて保存
+        if (
+          typeof action.payload.canvasPreferredLinewidth === 'number' ||
+          Object.values(LINEWIDTH).includes(action.payload.canvasPreferredLinewidth)
+        ) {
           state.canvasPreferredLinewidth = action.payload.canvasPreferredLinewidth;
         }
       }

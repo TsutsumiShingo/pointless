@@ -1,6 +1,6 @@
 import styles from './styles.module.css';
 import classNames from 'classnames';
-import { LINEWIDTH, MODE } from './../../constants';
+import { LINEWIDTH, LINEWIDTH_MIN, LINEWIDTH_MAX, MODE } from './../../constants';
 
 import { ReactComponent as PanIcon } from './../../../../assets/icons/move.svg';
 import { ReactComponent as EraserIcon } from './../../../../assets/icons/eraser.svg';
@@ -25,11 +25,28 @@ function Toolbar(props) {
   const platform = useSelector((state) => state.settings.platform);
   const ctrlOrMeta = ctrlOrMetaChar(platform);
 
+  const handleSliderChange = (event) => {
+    const value = parseInt(event.target.value);
+    props.onLinewidthChange(value);
+  };
+
+  const getCurrentLinewidthValue = () => {
+    if (props.linewidth === LINEWIDTH.SMALL) return LINEWIDTH.SMALL;
+    if (props.linewidth === LINEWIDTH.MEDIUM) return LINEWIDTH.MEDIUM;
+    if (props.linewidth === LINEWIDTH.LARGE) return LINEWIDTH.LARGE;
+    return props.linewidth; // カスタム値の場合
+  };
+
+  const isCustomLinewidth = () => {
+    return ![LINEWIDTH.SMALL, LINEWIDTH.MEDIUM, LINEWIDTH.LARGE].includes(props.linewidth);
+  };
+
   return (
     <>
       <div className={classNames(styles['toolbar__container'])}>
         <Tooltip placement="top" overlay="small stroke width">
           <div
+            data-testid="linewidth-small"
             onClick={() => props.onLinewidthChange(LINEWIDTH.SMALL)}
             className={classNames(
               styles['toolbar__item'],
@@ -44,6 +61,7 @@ function Toolbar(props) {
         </Tooltip>
         <Tooltip placement="top" overlay="medium stroke width">
           <div
+            data-testid="linewidth-medium"
             onClick={() => props.onLinewidthChange(LINEWIDTH.MEDIUM)}
             className={classNames(
               styles['toolbar__item'],
@@ -58,6 +76,7 @@ function Toolbar(props) {
         </Tooltip>
         <Tooltip placement="top" overlay="large stroke width">
           <div
+            data-testid="linewidth-large"
             onClick={() => props.onLinewidthChange(LINEWIDTH.LARGE)}
             className={classNames(
               styles['toolbar__item'],
@@ -70,6 +89,27 @@ function Toolbar(props) {
             )}
           />
         </Tooltip>
+
+        {/* カスタムラインサイズスライダー */}
+        {props.isDrawMode && (
+          <div className={styles['linewidth-slider-container']}>
+            <Tooltip placement="top" overlay="custom stroke width">
+              <input
+                type="range"
+                min={LINEWIDTH_MIN}
+                max={LINEWIDTH_MAX}
+                value={getCurrentLinewidthValue()}
+                onChange={handleSliderChange}
+                className={styles['linewidth-slider']}
+                disabled={!props.isDrawMode}
+              />
+            </Tooltip>
+            <div className={styles['linewidth-value']}>
+              {isCustomLinewidth() ? `${props.linewidth}px` : ''}
+            </div>
+          </div>
+        )}
+
         <div className={styles['toolbar__item-separator']} />
         <Tooltip
           placement="top"

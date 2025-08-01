@@ -988,8 +988,10 @@ class Paper extends React.Component {
   };
 
   changeLinewidth = (linewidth) => {
-    this.setState({ linewidth });
-    this.props.dispatch(setPreferredLinewidth(linewidth));
+    // カスタム値の場合は数値として保存
+    const linewidthValue = typeof linewidth === 'number' ? linewidth : linewidth;
+    this.setState({ linewidth: linewidthValue });
+    this.props.dispatch(setPreferredLinewidth(linewidthValue));
   };
 
   setMode = (mode) => {

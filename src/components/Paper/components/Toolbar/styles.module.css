@@ -169,3 +169,83 @@
     border: 1px solid #d1d1d1;
   }
 }
+
+/* スライダー用のスタイル */
+.linewidth-slider-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 12px;
+  background: inherit;
+  border-radius: 7px;
+  margin: 5px;
+  min-width: 120px;
+}
+
+.linewidth-slider {
+  width: 100px;
+  height: 4px;
+  border-radius: 2px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.linewidth-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.linewidth-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+.linewidth-value {
+  font-size: 12px;
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+@media (prefers-color-scheme: dark) {
+  .linewidth-slider {
+    background: #707070;
+  }
+
+  .linewidth-slider::-webkit-slider-thumb {
+    background: #f9bd3f;
+  }
+
+  .linewidth-slider::-moz-range-thumb {
+    background: #f9bd3f;
+  }
+
+  .linewidth-value {
+    color: #fff;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .linewidth-slider {
+    background: #d1d1d1;
+  }
+
+  .linewidth-slider::-webkit-slider-thumb {
+    background: #f9bd3f;
+  }
+
+  .linewidth-slider::-moz-range-thumb {
+    background: #f9bd3f;
+  }
+
+  .linewidth-value {
+    color: #000;
+  }
+}

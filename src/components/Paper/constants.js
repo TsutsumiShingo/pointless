@@ -2,7 +2,12 @@ export const LINEWIDTH = {
   SMALL: 2,
   MEDIUM: 5,
   LARGE: 8,
+  CUSTOM: 'custom',
 };
+
+export const LINEWIDTH_MIN = 1;
+export const LINEWIDTH_MAX = 20;
+export const LINEWIDTH_DEFAULT = 5;
 
 export const MODE = {
   FREEHAND: 'freehand',
