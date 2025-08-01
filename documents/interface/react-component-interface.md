@@ -23,9 +23,12 @@ graph TB
     C --> L[HelpButton]
     C --> M[InfoButton]
     
-    D --> N[FormCheckbox]
-    D --> O[FormSelect]
-    D --> P[InlineEdit]
+    I --> N[LinewidthSelector]
+    N --> O[LinewidthSlider]
+    
+    D --> P[FormCheckbox]
+    D --> Q[FormSelect]
+    D --> R[InlineEdit]
     
     K --> D
     L --> D
@@ -190,7 +193,7 @@ interface PaperEventHandlers {
   
   // 色・線幅変更
   onSelectColor(color: string): void;
-  onLinewidthChange(linewidth: LineWidth): void;
+  onLinewidthChange(linewidth: number): void;
 }
 ```
 
@@ -201,7 +204,7 @@ interface PaperEventHandlers {
 interface ToolbarProps {
   // 現在の状態
   mode: DrawingMode;
-  linewidth: LineWidth;
+  linewidth: number;
   canUndo: boolean;
   canRedo: boolean;
   canResetZoom: boolean;
@@ -228,7 +231,7 @@ interface ToolbarProps {
   onZoomIn(): void;
   onZoomOut(): void;
   onClearCanvas(): void;
-  onLinewidthChange(linewidth: LineWidth): void;
+  onLinewidthChange(linewidth: number): void;
 }
 ```
 
@@ -537,4 +540,183 @@ const sortedPapers = useMemo(() => {
 {papers.length > 0 && <PaperList papers={papers} />}
 ```
 
-このReactコンポーネント間インタフェース仕様により、コンポーネント間の明確な責務分離と効率的なデータフローが実現されています。
+### 10. LinewidthSelector Component
+
+#### Props
+```typescript
+interface LinewidthSelectorProps {
+  linewidth: number;
+  isDrawMode: boolean;
+  onLinewidthChange(value: number): void;
+}
+```
+
+#### Redux Integration
+```typescript
+const linewidthSliderMode = useSelector((state: RootState) => 
+  state.settings.linewidthSliderMode
+);
+```
+
+#### 内部State
+```typescript
+interface LinewidthSelectorState {
+  sliderValue: number;
+  lastValidValue: number;
+}
+```
+
+#### 主要メソッド
+```typescript
+const handlePresetClick = (presetValue: number): void;
+const handleSliderChange = (value: number): void;
+const handleModeToggle = (): void;
+```
+
+#### 責務
+- プリセットボタン（小・中・大）の管理
+- スライダーモードの切り替え制御
+- Redux状態との同期
+- プリセット値とカスタム値の調整
+
+### 11. LinewidthSlider Component
+
+#### Props
+```typescript
+interface LinewidthSliderProps {
+  value: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  disabled?: boolean;
+  onChange?(value: number): void;
+  onChangeComplete?(value: number): void;
+}
+```
+
+#### デフォルトProps
+```typescript
+LinewidthSlider.defaultProps = {
+  min: 1,
+  max: 20,
+  step: 1,
+  disabled: false,
+};
+```
+
+#### 内部State
+```typescript
+interface LinewidthSliderState {
+  isHovered: boolean;
+  isDragging: boolean;
+  isFocused: boolean;
+  announceValue: string;
+}
+```
+
+#### イベントハンドラー
+```typescript
+interface LinewidthSliderEventHandlers {
+  handleSliderChange(event: React.ChangeEvent<HTMLInputElement>): void;
+  handleSliderChangeComplete(event: React.MouseEvent | React.TouchEvent): void;
+  handleKeyDown(event: React.KeyboardEvent): void;
+  handleFocus(): void;
+  handleBlur(): void;
+}
+```
+
+#### キーボードナビゲーション
+```typescript
+// サポートされるキー操作
+const keyboardActions = {
+  'ArrowLeft': () => decreaseValue(1),
+  'ArrowRight': () => increaseValue(1),
+  'ArrowDown': () => decreaseValue(1),
+  'ArrowUp': () => increaseValue(1),
+  'Home': () => setValue(min),
+  'End': () => setValue(max),
+  'PageDown': () => decreaseValue(5),
+  'PageUp': () => increaseValue(5),
+};
+```
+
+#### アクセシビリティ属性
+```typescript
+const accessibilityProps = {
+  'role': 'slider',
+  'aria-label': 'Line width slider',
+  'aria-valuemin': min,
+  'aria-valuemax': max,
+  'aria-valuenow': value,
+  'aria-valuetext': `${value} pixels`,
+  'aria-describedby': 'linewidth-slider-desc',
+  'tabIndex': disabled ? -1 : 0,
+};
+```
+
+#### 責務
+- スライダーUIの描画と操作処理
+- 値の範囲制限とステップ制御
+- リアルタイムプレビュー表示
+- キーボードナビゲーション対応
+- スクリーンリーダー対応
+
+## 新機能統合パターン
+
+### LinewidthSelector統合フロー
+
+```mermaid
+graph TD
+    A[Paper Component] -->|linewidth, isDrawMode, onLinewidthChange| B[Toolbar]
+    B -->|same props| C[LinewidthSelector]
+    C -->|Redux dispatch| D[setLinewidthSliderMode]
+    C -->|conditional render| E[LinewidthSlider]
+    C -->|preset click| F[handlePresetClick]
+    E -->|onChange| G[handleSliderChange]
+    F --> H[onLinewidthChange callback]
+    G --> H
+    H -->|dispatch| I[setPreferredLinewidth]
+    I -->|state update| J[Redux Store]
+    J -->|auto-save| K[Tauri saveSettings]
+```
+
+### モード切り替えロジック
+
+```typescript
+// プリセットモード → スライダーモード
+const switchToSliderMode = () => {
+  dispatch(setLinewidthSliderMode(true));
+  // 現在のプリセット値を保持
+};
+
+// スライダーモード → プリセットモード  
+const switchToPresetMode = (currentValue: number) => {
+  dispatch(setLinewidthSliderMode(false));
+  
+  if (!isPresetLinewidth(currentValue)) {
+    // カスタム値の場合、最も近いプリセットに調整
+    const closestPreset = getClosestPresetLinewidth(currentValue);
+    onLinewidthChange(closestPreset);
+  }
+};
+```
+
+### エラーハンドリングパターン
+
+```typescript
+// バリデーション付きイベントハンドラー
+const handleValueChange = (value: number) => {
+  try {
+    const validatedValue = validateLinewidth(value);
+    setSliderValue(validatedValue);
+    onLinewidthChange(validatedValue);
+  } catch (error) {
+    console.error('Error in handleValueChange:', error);
+    // フォールバック処理
+    const fallbackValue = validateLinewidth(lastValidValue);
+    onLinewidthChange(fallbackValue);
+  }
+};
+```
+
+このReactコンポーネント間インタフェース仕様により、コンポーネント間の明確な責務分離と効率的なデータフローが実現されています。新しいLinewidthSelectorとLinewidthSliderコンポーネントも既存のアーキテクチャパターンに準拠し、堅牢で保守性の高い実装となっています。

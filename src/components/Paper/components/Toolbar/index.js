@@ -1,6 +1,7 @@
 import styles from './styles.module.css';
 import classNames from 'classnames';
-import { LINEWIDTH, MODE } from './../../constants';
+import { MODE } from './../../constants';
+import LinewidthSelector from '../LinewidthSelector';
 
 import { ReactComponent as PanIcon } from './../../../../assets/icons/move.svg';
 import { ReactComponent as EraserIcon } from './../../../../assets/icons/eraser.svg';
@@ -28,48 +29,13 @@ function Toolbar(props) {
   return (
     <>
       <div className={classNames(styles['toolbar__container'])}>
-        <Tooltip placement="top" overlay="small stroke width">
-          <div
-            onClick={() => props.onLinewidthChange(LINEWIDTH.SMALL)}
-            className={classNames(
-              styles['toolbar__item'],
-              styles['toolbar__item__linewidth'],
-              styles['toolbar__item__linewidth-small'],
-              {
-                [styles['toolbar__item-disabled']]: !props.isDrawMode,
-                [styles['toolbar__item-active']]: props.linewidth === LINEWIDTH.SMALL,
-              },
-            )}
+        <div className={classNames(styles['toolbar__item'], styles['toolbar__item--linewidth-selector'])}>
+          <LinewidthSelector
+            linewidth={props.linewidth}
+            isDrawMode={props.isDrawMode}
+            onLinewidthChange={props.onLinewidthChange}
           />
-        </Tooltip>
-        <Tooltip placement="top" overlay="medium stroke width">
-          <div
-            onClick={() => props.onLinewidthChange(LINEWIDTH.MEDIUM)}
-            className={classNames(
-              styles['toolbar__item'],
-              styles['toolbar__item__linewidth'],
-              styles['toolbar__item__linewidth-medium'],
-              {
-                [styles['toolbar__item-disabled']]: !props.isDrawMode,
-                [styles['toolbar__item-active']]: props.linewidth === LINEWIDTH.MEDIUM,
-              },
-            )}
-          />
-        </Tooltip>
-        <Tooltip placement="top" overlay="large stroke width">
-          <div
-            onClick={() => props.onLinewidthChange(LINEWIDTH.LARGE)}
-            className={classNames(
-              styles['toolbar__item'],
-              styles['toolbar__item__linewidth'],
-              styles['toolbar__item__linewidth-large'],
-              {
-                [styles['toolbar__item-disabled']]: !props.isDrawMode,
-                [styles['toolbar__item-active']]: props.linewidth === LINEWIDTH.LARGE,
-              },
-            )}
-          />
-        </Tooltip>
+        </div>
         <div className={styles['toolbar__item-separator']} />
         <Tooltip
           placement="top"

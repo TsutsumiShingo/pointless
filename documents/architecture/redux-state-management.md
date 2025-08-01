@@ -138,6 +138,7 @@ interface SettingsState {
   sortPapersBy: number;
   viewMode: number;
   canvasPreferredLinewidth: number;
+  linewidthSliderMode: boolean;    // 新規追加: スライダーモード状態
 }
 ```
 
@@ -148,9 +149,53 @@ interface SettingsState {
 | `setDarkMode` | テーマ設定 | `boolean` | ✓ |
 | `setSortPapersBy` | ソート順設定 | `number` | ✓ |
 | `setViewMode` | 表示モード設定 | `number` | ✓ |
-| `setPreferredLinewidth` | デフォルト線幅 | `number` | ✓ |
-| `loadSettings` | 設定読み込み | `SettingsState` | - |
+| `setPreferredLinewidth` | デフォルト線幅（拡張範囲対応） | `number` | ✓ |
+| `setLinewidthSliderMode` | スライダーモード切り替え | `boolean` | ✓ |
+| `loadSettings` | 設定読み込み（範囲検証付き） | `SettingsState` | - |
 | `saveSettings` | 設定保存 | なし | - |
+
+#### 線幅設定の拡張仕様
+
+```typescript
+// 従来のプリセット値（後方互換性維持）
+const LINEWIDTH = {
+  SMALL: 2,
+  MEDIUM: 5, 
+  LARGE: 8,
+};
+
+// 新しいスライダー設定範囲
+const LINEWIDTH_SLIDER = {
+  MIN: 1,      // 最小値
+  MAX: 20,     // 最大値
+  STEP: 1,     // ステップ値
+  DEFAULT: 2,  // デフォルト値
+};
+```
+
+#### バリデーション機能
+
+```typescript
+// setPreferredLinewidth アクションでの自動検証
+const setPreferredLinewidth = (state, action) => {
+  const value = Number(action.payload);
+  
+  // 型と範囲の検証
+  if (isNaN(value) || !isFinite(value)) {
+    console.warn(`Invalid linewidth: ${action.payload}`);
+    state.canvasPreferredLinewidth = LINEWIDTH_SLIDER.DEFAULT;
+    return;
+  }
+  
+  // 値のクランプと丸め
+  const clampedValue = Math.max(
+    LINEWIDTH_SLIDER.MIN,
+    Math.min(LINEWIDTH_SLIDER.MAX, Math.round(value))
+  );
+  
+  state.canvasPreferredLinewidth = clampedValue;
+};
+```
 
 ## Middleware詳細
 
@@ -211,7 +256,8 @@ const saveSettingsMiddleware = (store) => (next) => (action) => {
     const whitelistedActions = [
       'setSortPapersBy', 
       'setViewMode', 
-      'setPreferredLinewidth'
+      'setPreferredLinewidth',
+      'setLinewidthSliderMode'    // 新規追加
     ];
 
     if (reducerName === 'settings' && whitelistedActions.includes(actionName)) {

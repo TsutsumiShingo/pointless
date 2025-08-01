@@ -1,0 +1,266 @@
+/* Main container for the linewidth selector */
+.linewidthSelector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Container for preset buttons and toggle */
+.presetContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Base styles for preset buttons */
+.presetButton {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid transparent;
+  padding: 0;
+  font: inherit;
+}
+
+.presetButton:hover {
+  transform: scale(1.1);
+}
+
+.presetButton:active {
+  transform: scale(0.95);
+}
+
+/* Small preset button */
+.presetButtonsmall::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  background: #000;
+  border-radius: 50%;
+}
+
+/* Medium preset button */
+.presetButtonmedium::after {
+  content: '';
+  width: 1.2rem;
+  height: 1.2rem;
+  background: #000;
+  border-radius: 50%;
+}
+
+/* Large preset button */
+.presetButtonlarge::after {
+  content: '';
+  width: 1.7rem;
+  height: 1.7rem;
+  background: #000;
+  border-radius: 50%;
+}
+
+/* Active state for preset buttons */
+.presetButtonActive {
+  border-color: #f9bd3f;
+  transform: scale(1.05);
+}
+
+.presetButtonActive::after {
+  background: #000;
+}
+
+/* Disabled state for preset buttons */
+.presetButtonDisabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.presetButtonDisabled:hover {
+  transform: none;
+}
+
+.presetButtonDisabled:active {
+  transform: none;
+}
+
+/* Toggle button styles */
+.toggleButton {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #888;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  margin-left: 4px;
+}
+
+.toggleButton:hover {
+  border-color: #2e9ceb;
+  color: #2e9ceb;
+  transform: scale(1.05);
+}
+
+.toggleButton:active {
+  transform: scale(0.95);
+}
+
+/* Active state for toggle button */
+.toggleButtonActive {
+  background: #2e9ceb;
+  border-color: #2e9ceb;
+  color: #ffffff;
+}
+
+.toggleButtonActive:hover {
+  background: #1a8cd8;
+  border-color: #1a8cd8;
+}
+
+/* Disabled state for toggle button */
+.toggleButtonDisabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.toggleButtonDisabled:hover {
+  border-color: var(--color-text-secondary, #888);
+  color: var(--color-text-secondary, #888);
+  transform: none;
+}
+
+.toggleButtonDisabled:active {
+  transform: none;
+}
+
+/* Slider wrapper */
+.sliderWrapper {
+  margin-top: 4px;
+  padding: 4px 0;
+  border-top: 1px solid #d1d1d1;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .presetButton::after {
+    background: #fff;
+  }
+  
+  .presetButtonActive::after {
+    background: #fff;
+  }
+  
+  .toggleButton {
+    background: transparent;
+    border-color: #888;
+    color: #888;
+  }
+  
+  .toggleButtonActive {
+    background: #2e9ceb;
+    border-color: #2e9ceb;
+    color: #fff;
+  }
+  
+  .toggleButtonActive:hover {
+    background: #1a8cd8;
+    border-color: #1a8cd8;
+  }
+  
+  .sliderWrapper {
+    border-top-color: #707070;
+  }
+}
+
+/* Animation for slider appearance */
+.sliderWrapper {
+  animation: slideDown 0.2s ease-out;
+  transform-origin: top;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .presetContainer {
+    gap: 3px;
+  }
+  
+  .presetButton,
+  .toggleButton {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .presetButtonsmall::after {
+    width: 1.5px;
+    height: 1.5px;
+  }
+  
+  .presetButtonmedium::after {
+    width: 4px;
+    height: 4px;
+  }
+  
+  .presetButtonlarge::after {
+    width: 7px;
+    height: 7px;
+  }
+}
+
+/* Focus styles for accessibility */
+.presetButton:focus,
+.toggleButton:focus {
+  outline: 2px solid #2e9ceb;
+  outline-offset: 2px;
+}
+
+.presetButton:focus:not(:focus-visible),
+.toggleButton:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Focus styles for buttons */
+.presetButton:focus-visible {
+  outline: 2px solid #2e9ceb;
+  outline-offset: 2px;
+  transform: scale(1.05);
+}
+
+.toggleButton:focus-visible {
+  outline: 2px solid #2e9ceb;
+  outline-offset: 2px;
+  transform: scale(1.05);
+}
+
+/* Ensure disabled buttons don't receive focus */
+.presetButton:disabled,
+.toggleButton:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.presetButton:disabled:focus,
+.toggleButton:disabled:focus {
+  outline: none;
+}

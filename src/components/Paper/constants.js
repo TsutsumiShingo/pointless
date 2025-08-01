@@ -4,6 +4,19 @@ export const LINEWIDTH = {
   LARGE: 8,
 };
 
+export const LINEWIDTH_SLIDER = {
+  MIN: 1,
+  MAX: 20,
+  STEP: 1,
+  DEFAULT: 2,
+};
+
+export const LINEWIDTH_PRESETS = [
+  { key: 'SMALL', value: 2, label: 'small stroke width' },
+  { key: 'MEDIUM', value: 5, label: 'medium stroke width' },
+  { key: 'LARGE', value: 8, label: 'large stroke width' },
+];
+
 export const MODE = {
   FREEHAND: 'freehand',
   ELLIPSE: 'ellipse',

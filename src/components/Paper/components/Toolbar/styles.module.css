@@ -27,6 +27,17 @@
   justify-content: center;
 }
 
+.toolbar__item--linewidth-selector {
+  width: auto;
+  min-width: 8rem;
+  max-width: 12rem;
+  height: auto;
+  padding: 8px;
+  margin: 2px 5px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
 .toolbar__item:hover {
   cursor: pointer;
 }
